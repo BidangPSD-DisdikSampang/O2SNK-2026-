@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>O2SN SD 2026 - Kab. Sampang | Live Cabang Olahraga</title>
+    <!-- SheetJS (XLSX) untuk ekspor Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+            /* Gradasi warna biru gelap ke biru baja / silver */
+            background: linear-gradient(135deg, #0a1929, #132f4c);
+            min-height: 100vh;
+            padding: 20px;
+            color: #eef5ff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(10, 25, 41, 0.7);
+            backdrop-filter: blur(14px);
+            border-radius: 48px;
+            border: 1px solid rgba(100, 150, 200, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #C0E0FF, #A0C4F0, #6B93D0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .live-badge {
+            display: inline-block;
+            background: #b91c1c;
+            padding: 5px 18px;
+            border-radius: 40px;
+            animation: pulse 1.5s infinite;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            box-shadow: 0 0 8px rgba(220,38,38,0.6);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.75; transform: scale(1.02); background: #dc2626; }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(25, 55, 80, 0.65);
+            backdrop-filter: blur(8px);
+            border-radius: 28px;
+            padding: 20px 12px;
+            text-align: center;
+            border: 1px solid rgba(70, 130, 200, 0.4);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            background: rgba(35, 75, 105, 0.8);
+            border-color: #8bb9fe;
+        }
+
+        .stat-number {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #B8D8FF;
+            line-height: 1.2;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .filter-container {
+            background: rgba(8, 28, 48, 0.7);
+            border-radius: 28px;
+            padding: 20px 24px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(70, 130, 200, 0.4);
+        }
+
+        .filter-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #B8D8FF;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .export-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .excel-btn {
+            background: linear-gradient(135deg, #1e6b3b, #0f4c2d);
+            border: none;
+            padding: 8px 22px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .excel-btn:hover {
+            background: linear-gradient(135deg, #2a8a4a, #1a6a3a);
+            transform: scale(1.02);
+        }
+
+        .filter-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            color: #B8D8FF;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .filter-select {
+            width: 100%;
+            background: rgba(15, 40, 60, 0.95);
+            border: 1px solid rgba(70, 140, 210, 0.6);
+            padding: 12px 16px;
+            border-radius: 20px;
+            color: #eef5ff;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .filter-select:hover,
+        .filter-select:focus {
+            border-color: #7bb3e0;
+            background: #1e4a6e;
+            box-shadow: 0 0 0 2px rgba(100, 160, 220, 0.3);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 14px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .reset-btn,
+        .apply-btn {
+            padding: 8px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .reset-btn {
+            background: rgba(220, 38, 38, 0.25);
+            border: 1px solid rgba(220, 38, 38, 0.6);
+            color: #ffb4b4;
+        }
+
+        .reset-btn:hover {
+            background: rgba(220, 38, 38, 0.5);
+            color: white;
+            transform: scale(0.98);
+        }
+
+        .apply-btn {
+            background: rgba(34, 197, 94, 0.25);
+            border: 1px solid rgba(34, 197, 94, 0.7);
+            color: #bcf0c2;
+        }
+
+        .apply-btn:hover {
+            background: rgba(34, 197, 94, 0.5);
+            color: white;
+            transform: scale(0.98);
+        }
+
+        .filter-info {
+            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 10px 18px;
+            border-radius: 32px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 500;
+            color: #cce5ff;
+        }
+
+        .table-container {
+            background: rgba(8, 28, 48, 0.75);
+            border-radius: 28px;
+            padding: 20px;
+            overflow-x: auto;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(180, 210, 255, 0.15);
+            vertical-align: middle;
+        }
+
+        th {
+            background: rgba(55, 110, 160, 0.25);
+            font-weight: 700;
+            color: #D6EAFF;
+            font-size: 0.85rem;
+        }
+
+        tr:hover {
+            background: rgba(70, 130, 200, 0.12);
+        }
+
+        .badge-lomba {
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(120deg, #0f6e6e, #1f8a7c);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+
+        .badge-pencak {
+            background: linear-gradient(120deg, #9b2c1d, #c2410c);
+        }
+        .badge-bulu {
+            background: linear-gradient(120deg, #1e5a6b, #0e7c6e);
+        }
+        .badge-athletics {
+            background: linear-gradient(120deg, #2a6e4b, #1f8a5a);
+        }
+
+        .badge-kategori {
+            background: #3a5e7a;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #e0f0ff;
+        }
+
+        .refresh-btn {
+            background: rgba(100, 150, 210, 0.25);
+            border: 1px solid rgba(100, 150, 210, 0.6);
+            padding: 6px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            color: #cae3ff;
+            transition: all 0.2s;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-left: 12px;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(100, 150, 210, 0.45);
+            transform: scale(1.02);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.7rem;
+            opacity: 0.8;
+            color: #bdd4ff;
+        }
+
+        .refresh-time {
+            color: #B8E2FF;
+            font-weight: bold;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            padding: 12px 24px;
+            border-radius: 50px;
+            z-index: 1100;
+            animation: slideIn 0.25s ease;
+            font-weight: bold;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            font-size: 0.85rem;
+        }
+
+        .toast-success {
+            background: #1e6f3f;
+            border-left: 5px solid #a3e9b0;
+        }
+
+        .toast-error {
+            background: #b91c1c;
+            border-left: 5px solid #ffb4a2;
+        }
+
+        .toast-info {
+            background: #0e6b8c;
+            border-left: 5px solid #9cdbff;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #b0caf5;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            .filter-grid {
+                flex-direction: column;
+                gap: 12px;
+            }
+            th, td {
+                font-size: 0.7rem;
+                padding: 8px 6px;
+            }
+            .stat-number {
+                font-size: 1.6rem;
+            }
+            .export-group {
+                margin-top: 8px;
+            }
+            .filter-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        button {
+            background: none;
+            border: none;
+        }
+        .header-sub {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.9;
+            color: #b8d9ff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🥋🏸🏃 O2SN SD 2026</h1>
+        <h2 class="header-sub">KABUPATEN SAMPANG | FULL ONLINE</h2>
+        <div class="live-badge">🔴 LIVE SYNC GOOGLE SHEETS</div>
+        <p style="margin-top: 12px;">⏱️ Last sync: <span id="lastUpdate" class="refresh-time">--:--:--</span></p>
+    </div>
+
+    <div class="stats-grid" id="statsGrid">
+        <div class="loading">Memuat statistik online...</div>
+    </div>
+
+    <div class="filter-container">
+        <div class="filter-title">
+            <span>🔍 Filter Data Real-time (3 Cabang Olahraga)</span>
+            <div class="export-group">
+                <button id="exportExcelBtn" class="excel-btn">📎 Ekspor ke Excel (XLSX)</button>
+            </div>
+        </div>
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label>📍 Kecamatan</label>
+                <select id="kecamatanFilter" class="filter-select">
+                    <option value="all">🏘️ Semua Kecamatan</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>🏅 Cabang Olahraga (Lomba)</label>
+                <select id="kategoriFilter" class="filter-select">
+                    <option value="all">🏷️ Semua Cabang</option>
+                    <option value="Pencak Silat">🥋 Pencak Silat</option>
+                    <option value="Bulutangkis">🏸 Bulutangkis</option>
+                    <option value="Kids' Athletics">🏃 Kids' Athletics</option>
+                </select>
+            </div>
+        </div>
+        <div class="filter-actions">
+            <button class="apply-btn" id="applyFilterBtn">✓ Terapkan Filter</button>
+            <button class="reset-btn" id="resetFilterBtn">↺ Reset Semua Filter</button>
+        </div>
+        <div class="filter-info" id="filterInfo">
+            Menampilkan semua data online
+        </div>
+    </div>
+
+    <div class="table-container">
+        <h3>📋 DAFTAR PESERTA O2SN SD 2026 
+            <button class="refresh-btn" id="manualRefreshBtn">⟳ Refresh Sekarang</button>
+        </h3>
+        <div style="overflow-x: auto;">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Siswa</th>
+                        <th>Asal Sekolah</th>
+                        <th>Kecamatan</th>
+                        <th>Cabang Olahraga</th>
+                        <th>Kategori</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="6" class="loading">🔄 Menghubungkan ke Google Spreadsheet (Online Mode)...</td><tr>
+                </tbody>
+              </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>⚡ Mode Full Online | Auto-refresh setiap 30 detik | Data langsung dari Google Form O2SN Kab. Sampang</p>
+        <p>🏅 Cabang lomba: Pencak Silat | Bulutangkis | Kids' Athletics — Klik tombol Ekspor Excel untuk menyimpan data (sesuai filter)</p>
+    </div>
+</div>
+
+<script>
+    // ======================== O2SN SD 2026 - FULL ONLINE MODE + EKSPOR EXCEL (WARNA SILVER/BIRU) ========================
+    const API_URL = "https://script.google.com/macros/s/AKfycbyNiTSb62miEw9dlCCPs8FItycYXNjzkGjweeXBxM4nfKxM7J-r8bMYQbCvvuyFCgGd/exec";
+    
+    let masterData = [];
+    let filteredMaster = [];
+    let autoInterval;
+    
+    let activeFilters = {
+        kecamatan: "all",
+        kategori: "all"
+    };
+    
+    const VALID_BRANCHES = ["Pencak Silat", "Bulutangkis", "Kids' Athletics"];
+    
+    function safeString(value) {
+        if (value === null || value === undefined) return "";
+        if (typeof value === "string") return value.trim();
+        if (typeof value === "number") return value.toString();
+        if (typeof value === "boolean") return value ? "Ya" : "Tidak";
+        if (typeof value === "object") return JSON.stringify(value);
+        return String(value);
+    }
+    
+    function normalizeBranch(rawValue) {
+        let cleaned = safeString(rawValue).toLowerCase().trim();
+        if (cleaned.includes("pencak") || cleaned.includes("silat")) return "Pencak Silat";
+        if (cleaned.includes("bulu") || cleaned.includes("badminton") || cleaned.includes("bulutangkis")) return "Bulutangkis";
+        if (cleaned.includes("kids") || cleaned.includes("athletics") || cleaned.includes("atletik") || cleaned.includes("lari")) return "Kids' Athletics";
+        if (rawValue === "Pencak Silat" || rawValue === "Bulutangkis" || rawValue === "Kids' Athletics") return rawValue;
+        return rawValue;
+    }
+    
+    function escapeHtml(str) {
+        const s = safeString(str);
+        return s.replace(/[&<>]/g, function(m) {
+            if (m === "&") return "&amp;";
+            if (m === "<") return "&lt;";
+            if (m === ">") return "&gt;";
+            return m;
+        });
+    }
+    
+    function showToast(message, type = "info") {
+        const existingToasts = document.querySelectorAll('.toast');
+        if (existingToasts.length > 3) existingToasts[0]?.remove();
+        const toast = document.createElement("div");
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => toast.remove(), 300);
+        }, 3200);
+    }
+    
+    async function fetchOnlineData() {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
+            const response = await fetch(API_URL, {
+                method: "GET",
+                cache: "no-store",
+                mode: "cors",
+                headers: { "Accept": "application/json" },
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const result = await response.json();
+            
+            if (result && result.success === true && Array.isArray(result.data)) {
+                masterData = result.data
+                    .map(row => {
+                        const namaSiswa = safeString(row.namaSiswa || row.nama_siswa || row.siswa || row.NamaSiswa || row.Nama_Siswa || row.Nama);
+                        const asalSekolah = safeString(row.asalSekolah || row.asal_sekolah || row.namaLembaga || row.sekolah || row.Sekolah || row.NamaLembaga);
+                        const kecamatan = safeString(row.kecamatan || row.Kecamatan || row.kec);
+                        let rawLomba = safeString(row.lomba || row.Lomba || row.cabang || row.Cabang || row.olahraga || row.status || "");
+                        let cabangOlga = normalizeBranch(rawLomba);
+                        let kategoriUsia = safeString(row.kategori || row.Kategori || row.gelombang || row.tingkat || row.usia || "Umum");
+                        
+                        if (namaSiswa === "" && asalSekolah === "") return null;
+                        return {
+                            namaSiswa: namaSiswa || "Tidak diketahui",
+                            asalSekolah: asalSekolah || "Tidak diketahui",
+                            kecamatan: kecamatan || "Tidak diketahui",
+                            lomba: cabangOlga || "Belum ditentukan",
+                            kategori: kategoriUsia || "Umum"
+                        };
+                    })
+                    .filter(item => item !== null);
+                
+                if (masterData.length === 0) {
+                    showToast("⚠️ Belum ada data peserta O2SN", "info");
+                } else {
+                    const validCount = masterData.filter(d => VALID_BRANCHES.includes(d.lomba)).length;
+                    showToast(`✅ Sync sukses: ${masterData.length} peserta (${validCount} cabang resmi)`, "success");
+                }
+                updateKecamatanDropdown();
+                applyFiltersAndRender();
+                updateLastSyncTime();
+            } else {
+                throw new Error(result?.error || "Format respons API tidak sesuai");
+            }
+        } catch (err) {
+            console.error("Gagal fetch online:", err);
+            showToast(`⚠️ Gagal mengambil data online: ${err.message}`, "error");
+            masterData = [];
+            updateKecamatanDropdown();
+            applyFiltersAndRender();
+            updateLastSyncTime();
+        }
+    }
+    
+    function updateKecamatanDropdown() {
+        const kecSet = new Set();
+        masterData.forEach(item => {
+            if (item.kecamatan && item.kecamatan !== "" && item.kecamatan !== "Tidak diketahui") 
+                kecSet.add(item.kecamatan);
+        });
+        const sorted = Array.from(kecSet).sort((a,b) => a.localeCompare(b, 'id'));
+        const selectElem = document.getElementById("kecamatanFilter");
+        if (!selectElem) return;
+        let options = `<option value="all">🏘️ Semua Kecamatan</option>`;
+        sorted.forEach(kec => {
+            const count = masterData.filter(d => d.kecamatan === kec).length;
+            options += `<option value="${escapeHtml(kec)}">📍 ${escapeHtml(kec)} (${count})</option>`;
+        });
+        selectElem.innerHTML = options;
+        if (activeFilters.kecamatan !== "all" && sorted.includes(activeFilters.kecamatan)) {
+            selectElem.value = activeFilters.kecamatan;
+        } else {
+            selectElem.value = "all";
+            activeFilters.kecamatan = "all";
+        }
+    }
+    
+    function applyFiltersAndRender() {
+        const kecFilterVal = document.getElementById("kecamatanFilter")?.value || "all";
+        const branchFilterVal = document.getElementById("kategoriFilter")?.value || "all";
+        activeFilters.kecamatan = kecFilterVal;
+        activeFilters.kategori = branchFilterVal;
+        
+        filteredMaster = masterData.filter(item => {
+            if (activeFilters.kecamatan !== "all" && item.kecamatan !== activeFilters.kecamatan) return false;
+            if (activeFilters.kategori !== "all" && item.lomba !== activeFilters.kategori) return false;
+            return true;
+        });
+        
+        renderStatCards();
+        renderTable();
+        updateFilterInfoText();
+    }
+    
+    function getBranchClass(branch) {
+        if (branch === "Pencak Silat") return "badge-pencak";
+        if (branch === "Bulutangkis") return "badge-bulu";
+        if (branch === "Kids' Athletics") return "badge-athletics";
+        return "";
+    }
+    
+    function renderStatCards() {
+        const total = filteredMaster.length;
+        let pencakCount = 0, buluCount = 0, kidsCount = 0, otherCount = 0;
+        filteredMaster.forEach(item => {
+            if (item.lomba === "Pencak Silat") pencakCount++;
+            else if (item.lomba === "Bulutangkis") buluCount++;
+            else if (item.lomba === "Kids' Athletics") kidsCount++;
+            else otherCount++;
+        });
+        const uniqueKec = new Set(filteredMaster.map(d => d.kecamatan).filter(k => k && k !== "" && k !== "Tidak diketahui")).size;
+        
+        let statsHtml = `
+            <div class="stat-card"><div class="stat-number">${total}</div><div class="stat-label">Total Peserta</div></div>
+            <div class="stat-card"><div class="stat-number">${uniqueKec}</div><div class="stat-label">Kecamatan Aktif</div></div>
+            <div class="stat-card"><div class="stat-number">${pencakCount}</div><div class="stat-label">🥋 Pencak Silat</div></div>
+            <div class="stat-card"><div class="stat-number">${buluCount}</div><div class="stat-label">🏸 Bulutangkis</div></div>
+            <div class="stat-card"><div class="stat-number">${kidsCount}</div><div class="stat-label">🏃 Kids' Athletics</div></div>
+        `;
+        if (otherCount > 0) {
+            statsHtml += `<div class="stat-card"><div class="stat-number">${otherCount}</div><div class="stat-label">⚙️ Lainnya</div></div>`;
+        }
+        document.getElementById("statsGrid").innerHTML = statsHtml;
+    }
+    
+    function renderTable() {
+        const tbody = document.getElementById("tableBody");
+        if (!tbody) return;
+        if (filteredMaster.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="empty-state">📭 Tidak ada data peserta sesuai filter (cabang: Pencak Silat, Bulutangkis, Kids' Athletics)</td></tr>`;
+            return;
+        }
+        let rows = "";
+        filteredMaster.forEach((item, idx) => {
+            let branchClass = getBranchClass(item.lomba);
+            let badgeBranchClass = branchClass ? `badge-lomba ${branchClass}` : `badge-lomba`;
+            rows += `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td><strong>${escapeHtml(item.namaSiswa)}</strong></td>
+                    <td>${escapeHtml(item.asalSekolah)}</td>
+                    <td>${escapeHtml(item.kecamatan)}</td>
+                    <td><span class="${badgeBranchClass}">${escapeHtml(item.lomba)}</span></td>
+                    <td><span class="badge-kategori">${escapeHtml(item.kategori)}</span></td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = rows;
+    }
+    
+    function updateFilterInfoText() {
+        const infoDiv = document.getElementById("filterInfo");
+        if (!infoDiv) return;
+        let filterDesc = [];
+        if (activeFilters.kecamatan !== "all") filterDesc.push(`Kec: ${activeFilters.kecamatan}`);
+        if (activeFilters.kategori !== "all") filterDesc.push(`Cabang: ${activeFilters.kategori}`);
+        const showing = filteredMaster.length;
+        const totalAll = masterData.length;
+        if (filterDesc.length === 0) {
+            infoDiv.innerHTML = `📊 Menampilkan semua data peserta (${showing} dari ${totalAll} peserta) - 3 cabang: Pencak Silat, Bulutangkis, Kids' Athletics`;
+        } else {
+            infoDiv.innerHTML = `🎯 Filter: ${filterDesc.join(" | ")} | ${showing} dari ${totalAll} peserta`;
+        }
+    }
+    
+    function resetFilters() {
+        document.getElementById("kecamatanFilter").value = "all";
+        document.getElementById("kategoriFilter").value = "all";
+        activeFilters.kecamatan = "all";
+        activeFilters.kategori = "all";
+        applyFiltersAndRender();
+        showToast("🔄 Semua filter direset (menampilkan seluruh cabang)", "info");
+    }
+    
+    function updateLastSyncTime() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString("id-ID");
+        const dateStr = now.toLocaleDateString("id-ID");
+        document.getElementById("lastUpdate").innerText = `${dateStr} ${timeStr}`;
+    }
+    
+    function manualRefresh() {
+        showToast("🔄 Memuat ulang data dari Google Sheets...", "info");
+        fetchOnlineData().catch(e => console.warn(e));
+    }
+    
+    // ========== EKSPOR KE EXCEL (XLSX) ==========
+    function exportToExcel() {
+        if (filteredMaster.length === 0) {
+            showToast("⚠️ Tidak ada data untuk diekspor. Terapkan filter atau pastikan data tersedia.", "error");
+            return;
+        }
+        
+        const excelData = [];
+        excelData.push(["No", "Nama Siswa", "Asal Sekolah", "Kecamatan", "Cabang Olahraga", "Kategori"]);
+        
+        filteredMaster.forEach((item, idx) => {
+            excelData.push([
+                idx + 1,
+                item.namaSiswa,
+                item.asalSekolah,
+                item.kecamatan,
+                item.lomba,
+                item.kategori
+            ]);
+        });
+        
+        const now = new Date();
+        const timestamp = now.toLocaleString("id-ID");
+        excelData.push([]);
+        excelData.push(["📅 Ekspor Data O2SN SD 2026 - Kab. Sampang"]);
+        excelData.push([`Tanggal & Waktu Ekspor: ${timestamp}`]);
+        excelData.push([`Total Peserta (filter aktif): ${filteredMaster.length} peserta`]);
+        if (activeFilters.kecamatan !== "all") excelData.push([`Filter Kecamatan: ${activeFilters.kecamatan}`]);
+        if (activeFilters.kategori !== "all") excelData.push([`Filter Cabang: ${activeFilters.kategori}`]);
+        
+        const ws = XLSX.utils.aoa_to_sheet(excelData);
+        ws['!cols'] = [{wch:6},{wch:28},{wch:30},{wch:22},{wch:22},{wch:20}];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Data_O2SN_Sampang");
+        
+        const datePart = now.toISOString().slice(0,19).replace(/:/g, '-');
+        let fileName = `O2SN_Sampang_${datePart}.xlsx`;
+        if (activeFilters.kecamatan !== "all" || activeFilters.kategori !== "all") {
+            fileName = `O2SN_Filtered_${datePart}.xlsx`;
+        }
+        
+        XLSX.writeFile(wb, fileName);
+        showToast(`✅ Ekspor berhasil! File: ${fileName} (${filteredMaster.length} baris data)`, "success");
+    }
+    
+    function startAutoRefresh() {
+        if (autoInterval) clearInterval(autoInterval);
+        autoInterval = setInterval(() => {
+            fetchOnlineData().catch(err => console.warn("Auto-refresh gagal", err));
+        }, 30000);
+    }
+    
+    function bindEvents() {
+        document.getElementById("applyFilterBtn").addEventListener("click", () => applyFiltersAndRender());
+        document.getElementById("resetFilterBtn").addEventListener("click", () => resetFilters());
+        document.getElementById("manualRefreshBtn").addEventListener("click", () => manualRefresh());
+        document.getElementById("exportExcelBtn").addEventListener("click", () => exportToExcel());
+        
+        document.getElementById("kecamatanFilter").addEventListener("change", () => applyFiltersAndRender());
+        document.getElementById("kategoriFilter").addEventListener("change", () => applyFiltersAndRender());
+    }
+    
+    async function init() {
+        bindEvents();
+        await fetchOnlineData();
+        startAutoRefresh();
+    }
+    
+    init();
+</script>
+</body>
+</html>
