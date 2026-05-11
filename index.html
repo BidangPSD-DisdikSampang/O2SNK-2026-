@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>O2SN SD 2026 - Kab. Sampang | Live Cabang Olahraga</title>
+    <title>O2SNK SD 2026 - Kab. Sampang | Live Cabang Olahraga</title>
     <!-- SheetJS (XLSX) untuk ekspor Excel -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -435,7 +435,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>🥋🏸🏃 O2SN SD 2026</h1>
+        <h1>🥋🏸🏃 O2SNK SD 2026</h1>
         <h2 class="header-sub">KABUPATEN SAMPANG | FULL ONLINE</h2>
         <div class="live-badge">🔴 LIVE SYNC GOOGLE SHEETS</div>
         <p style="margin-top: 12px;">⏱️ Last sync: <span id="lastUpdate" class="refresh-time">--:--:--</span></p>
@@ -479,7 +479,7 @@
     </div>
 
     <div class="table-container">
-        <h3>📋 DAFTAR PESERTA O2SN SD 2026 
+        <h3>📋 DAFTAR PESERTA O2SNK SD 2026 
             <button class="refresh-btn" id="manualRefreshBtn">⟳ Refresh Sekarang</button>
         </h3>
         <div style="overflow-x: auto;">
@@ -502,13 +502,13 @@
     </div>
 
     <div class="footer">
-        <p>⚡ Mode Full Online | Auto-refresh setiap 30 detik | Data langsung dari Google Form O2SN Kab. Sampang</p>
+        <p>⚡ Mode Full Online | Auto-refresh setiap 30 detik | Data langsung dari Google Form O2SNK Kab. Sampang</p>
         <p>🏅 Cabang lomba: Pencak Silat | Bulutangkis | Kids' Athletics — Klik tombol Ekspor Excel untuk menyimpan data (sesuai filter)</p>
     </div>
 </div>
 
 <script>
-    // ======================== O2SN SD 2026 - FULL ONLINE MODE + EKSPOR EXCEL (WARNA SILVER/BIRU) ========================
+    // ======================== O2SNK SD 2026 - FULL ONLINE MODE + EKSPOR EXCEL (WARNA SILVER/BIRU) ========================
     const API_URL = "https://script.google.com/macros/s/AKfycbyNiTSb62miEw9dlCCPs8FItycYXNjzkGjweeXBxM4nfKxM7J-r8bMYQbCvvuyFCgGd/exec";
     
     let masterData = [];
@@ -600,7 +600,7 @@
                     .filter(item => item !== null);
                 
                 if (masterData.length === 0) {
-                    showToast("⚠️ Belum ada data peserta O2SN", "info");
+                    showToast("⚠️ Belum ada data peserta O2SNK", "info");
                 } else {
                     const validCount = masterData.filter(d => VALID_BRANCHES.includes(d.lomba)).length;
                     showToast(`✅ Sync sukses: ${masterData.length} peserta (${validCount} cabang resmi)`, "success");
@@ -777,7 +777,7 @@
         const now = new Date();
         const timestamp = now.toLocaleString("id-ID");
         excelData.push([]);
-        excelData.push(["📅 Ekspor Data O2SN SD 2026 - Kab. Sampang"]);
+        excelData.push(["📅 Ekspor Data O2SNK SD 2026 - Kab. Sampang"]);
         excelData.push([`Tanggal & Waktu Ekspor: ${timestamp}`]);
         excelData.push([`Total Peserta (filter aktif): ${filteredMaster.length} peserta`]);
         if (activeFilters.kecamatan !== "all") excelData.push([`Filter Kecamatan: ${activeFilters.kecamatan}`]);
@@ -786,12 +786,12 @@
         const ws = XLSX.utils.aoa_to_sheet(excelData);
         ws['!cols'] = [{wch:6},{wch:28},{wch:30},{wch:22},{wch:22},{wch:20}];
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Data_O2SN_Sampang");
+        XLSX.utils.book_append_sheet(wb, ws, "Data_O2SNK_Sampang");
         
         const datePart = now.toISOString().slice(0,19).replace(/:/g, '-');
-        let fileName = `O2SN_Sampang_${datePart}.xlsx`;
+        let fileName = `O2SNK_Sampang_${datePart}.xlsx`;
         if (activeFilters.kecamatan !== "all" || activeFilters.kategori !== "all") {
-            fileName = `O2SN_Filtered_${datePart}.xlsx`;
+            fileName = `O2SNK_Filtered_${datePart}.xlsx`;
         }
         
         XLSX.writeFile(wb, fileName);
